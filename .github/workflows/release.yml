@@ -1,0 +1,29 @@
+# Pubblica una release quando si invia un tag di versione (es. v1.2.0):
+# controlla che il tag corrisponda alla "Version" del plugin, crea lo zip e lo allega alla release.
+# I siti con il plugin installato vedono l'aggiornamento in Bacheca → Aggiornamenti (entro 6 ore, o subito con "Controlla di nuovo").
+name: Release
+on:
+  push:
+    tags: ['v*']
+permissions:
+  contents: write
+jobs:
+  release:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v5
+      - name: Controllo versione
+        run: |
+          v=$(grep -m1 -E '^\s*\*\s*Version:' lu3g-page-notes.php | awk '{print $NF}')
+          [ "v$v" = "${GITHUB_REF_NAME}" ] || { echo "Tag ${GITHUB_REF_NAME} diverso dalla Version del plugin ($v)"; exit 1; }
+      - name: Pacchetto
+        run: sh bin/build.sh
+      - name: Note dal CHANGELOG
+        run: |
+          v=${GITHUB_REF_NAME#v}
+          awk -v v="$v" '$0 ~ "^## "v {f=1; next} /^## / {f=0} f' CHANGELOG.md > notes.md
+          [ -s notes.md ] || echo "Versione $v" > notes.md
+      - name: Release
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: gh release create "${GITHUB_REF_NAME}" dist/lu3g-page-notes.zip --title "${GITHUB_REF_NAME}" --notes-file notes.md
