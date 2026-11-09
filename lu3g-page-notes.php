@@ -2,7 +2,7 @@
 /**
  * Plugin Name:       LU3G Page Notes
  * Description:       Note sulle pagine del sito, direttamente dal frontend: si disegna una zona della pagina, si scrive un commento e si risponde. Le note le vedono e le scrivono solo gli utenti collegati con il permesso scelto.
- * Version:           1.0.0
+ * Version:           1.0.1
  * Plugin URI:        https://github.com/lu3gofficial/lu3g-page-notes
  * Update URI:        https://github.com/lu3gofficial/lu3g-page-notes
  * Author:            LU3G Agenzia Web
@@ -17,7 +17,7 @@ if ( ! defined( 'ABSPATH' ) ) {
 	exit;
 }
 
-define( 'LU3G_PN_VERSION', '1.0.0' );
+define( 'LU3G_PN_VERSION', '1.0.1' );
 define( 'LU3G_PN_FILE', __FILE__ );
 define( 'LU3G_PN_PATH', plugin_dir_path( __FILE__ ) );
 define( 'LU3G_PN_URL', plugin_dir_url( __FILE__ ) );
