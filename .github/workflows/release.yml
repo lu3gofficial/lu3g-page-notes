@@ -1,6 +1,8 @@
-# Pubblica una release quando si invia un tag di versione (es. v1.2.0):
-# controlla che il tag corrisponda alla "Version" del plugin, crea lo zip e lo allega alla release.
-# In alternativa si avvia a mano da Actions → Release → Run workflow: il tag lo crea la release, dalla "Version" del plugin.
+# Pubblica una release, in due modi:
+# - inviando un tag di versione (es. v1.2.0) dal computer;
+# - da GitHub, senza computer: Actions → Release → Run workflow (sul branch main). Il tag lo crea l'automazione
+#   leggendo la "Version" del plugin, e si ferma se quella versione è già stata pubblicata.
+# In entrambi i casi controlla la versione, crea lo zip e lo allega alla release con le note del CHANGELOG.
 # I siti con il plugin installato vedono l'aggiornamento in Bacheca → Aggiornamenti (entro 6 ore, o subito con "Controlla di nuovo").
 name: Release
 on:
@@ -15,14 +17,21 @@ jobs:
     steps:
       - uses: actions/checkout@v5
       - name: Controllo versione
+        env:
+          GH_TOKEN: ${{ github.token }}
         run: |
           v=$(grep -m1 -E '^\s*\*\s*Version:' lu3g-page-notes.php | awk '{print $NF}')
           if [ "${GITHUB_EVENT_NAME}" = "workflow_dispatch" ]; then
-            echo "TAG=v$v" >> "$GITHUB_ENV"
+            [ "${GITHUB_REF_NAME}" = "main" ] || { echo "Avvia il workflow dal branch main (ora: ${GITHUB_REF_NAME})"; exit 1; }
+            if gh release view "v$v" >/dev/null 2>&1 || git ls-remote --exit-code --tags origin "refs/tags/v$v" >/dev/null; then
+              echo "La versione $v è già pubblicata: aumenta la Version del plugin prima di rilasciare"; exit 1
+            fi
+            tag="v$v"
           else
-            [ "v$v" = "${GITHUB_REF_NAME}" ] || { echo "Tag ${GITHUB_REF_NAME} diverso dalla Version del plugin ($v)"; exit 1; }
-            echo "TAG=${GITHUB_REF_NAME}" >> "$GITHUB_ENV"
+            tag="${GITHUB_REF_NAME}"
+            [ "v$v" = "$tag" ] || { echo "Tag $tag diverso dalla Version del plugin ($v)"; exit 1; }
           fi
+          echo "TAG=$tag" >> "$GITHUB_ENV"
       - name: Pacchetto
         run: sh bin/build.sh
       - name: Note dal CHANGELOG
@@ -33,4 +42,4 @@ jobs:
       - name: Release
         env:
           GH_TOKEN: ${{ github.token }}
-        run: gh release create "${TAG}" dist/lu3g-page-notes.zip --target "${GITHUB_SHA}" --title "${TAG}" --notes-file notes.md
+        run: gh release create "$TAG" dist/lu3g-page-notes.zip --target "$GITHUB_SHA" --title "$TAG" --notes-file notes.md

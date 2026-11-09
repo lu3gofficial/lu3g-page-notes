@@ -1,5 +1,8 @@
 <?php
 /**
+ * FILE GENERATO da lu3g-updater 1.0.0 (github.com/lu3gofficial/lu3g-updater): non modificarlo a mano.
+ * Per cambiarlo si modifica il modello in lu3g-updater e si rigenera con bin/sync.sh (vedi il README di lu3g-updater).
+ *
  * Aggiornamenti del plugin da GitHub (repository pubblico lu3gofficial/lu3g-page-notes).
  *
  * Come funziona:

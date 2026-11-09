@@ -3,7 +3,7 @@ Contributors: lu3g
 Tags: notes, feedback, review, comments, frontend
 Requires at least: 6.0
 Requires PHP: 7.4
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 
 Note sulle pagine del sito, direttamente dal frontend: si disegna una zona, si scrive un commento e si risponde.
@@ -22,5 +22,9 @@ Pensato per le revisioni dei siti con il cliente e tra colleghi.
 Il plugin si aggiorna da solo dalle release di https://github.com/lu3gofficial/lu3g-page-notes.
 
 == Changelog ==
+
+= 1.0.1 =
+* Aggiornamenti dal modello comune lu3g-updater; release avviabile anche da Actions → Run workflow.
+
 = 1.0.0 =
 * Prima versione.
